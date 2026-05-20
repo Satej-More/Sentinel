@@ -1,0 +1,43 @@
+# Temporary: in-memory H2 for local dev without Docker/MySQL.
+# Enable Redis velocity: REDIS_ENABLED=true (requires docker compose redis)
+# Use profile "docker" (or future MySQL-local profile) when MySQL is available.
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/${H2_DATABASE:sentinel_db};MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: ${H2_USER:sa}
+    password: ${H2_PASSWORD:}
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+app:
+  kafka:
+    enabled: ${KAFKA_ENABLED:false}
+  redis:
+    enabled: ${REDIS_ENABLED:false}
+  fraud:
+    large-amount-threshold: 10000.00
+    velocity-window-seconds: 30
+    rapid-transaction-count-threshold: 5
+    rapid-transaction-window-minutes: 10
+    approve-max-score: 29
+    review-max-score: 69
+    large-amount-rule-score: 40
+    rapid-transaction-rule-score: 35
+    suspicious-ip-rule-score: 30
+    blacklisted-merchant-rule-score: 50
+    blacklisted-merchants:
+      - merchant-blocked
+    suspicious-ips:
+      - 10.0.0.1
+      - 192.0.2.99

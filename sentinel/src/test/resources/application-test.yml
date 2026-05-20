@@ -1,0 +1,30 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+  datasource:
+    url: jdbc:h2:mem:sentinel_test;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+app:
+  redis:
+    enabled: false
+  kafka:
+    enabled: false
+  fraud:
+    large-amount-threshold: 1000.00
+    velocity-window-seconds: 30
+    rapid-transaction-count-threshold: 5
+    rapid-transaction-window-minutes: 10
+    approve-max-score: 29
+    review-max-score: 45
+    blacklisted-merchants:
+      - merchant-blocked
+    suspicious-ips:
+      - 10.0.0.1

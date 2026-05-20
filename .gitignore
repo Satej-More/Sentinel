@@ -1,0 +1,47 @@
+# Build & Distribution Outputs
+**/target/
+**/dist/
+**/dist-ssr/
+**/build/
+
+# Dependency folders
+**/node_modules/
+
+# Local Environment Variables & Secrets
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Java Maven / JVM Wrappers
+.mvn/wrapper/maven-wrapper.jar
+**/*.class
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.db
+
+# IDE & Editor specific settings
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.iml
+*.iws
+*.ipr
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
