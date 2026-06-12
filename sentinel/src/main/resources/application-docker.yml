@@ -16,6 +16,8 @@ spring:
       port: ${REDIS_PORT:6379}
 
 app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
   redis:
     enabled: ${REDIS_ENABLED:true}
   kafka:
