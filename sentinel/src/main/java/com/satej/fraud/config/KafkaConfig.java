@@ -7,6 +7,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,10 +43,31 @@ public class KafkaConfig {
 	@Value("${spring.kafka.consumer.group-id}")
 	private String consumerGroupId;
 
+	@Value("${KAFKA_SASL_USERNAME:}")
+	private String saslUsername;
+
+	@Value("${KAFKA_SASL_PASSWORD:}")
+	private String saslPassword;
+
+	/**
+	 * Applies SASL/SSL properties required by Upstash Kafka when credentials are present.
+	 * When running locally with Docker Kafka, these fields are empty and no SASL config is applied.
+	 */
+	private void applySaslConfig(Map<String, Object> config) {
+		if (saslUsername != null && !saslUsername.isEmpty()) {
+			config.put("security.protocol", "SASL_SSL");
+			config.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-256");
+			config.put(SaslConfigs.SASL_JAAS_CONFIG,
+					"org.apache.kafka.common.security.scram.ScramLoginModule required username=\""
+							+ saslUsername + "\" password=\"" + saslPassword + "\";");
+		}
+	}
+
 	@Bean
 	KafkaAdmin kafkaAdmin() {
 		Map<String, Object> config = new HashMap<>();
 		config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+		applySaslConfig(config);
 		return new KafkaAdmin(config);
 	}
 
@@ -74,6 +96,7 @@ public class KafkaConfig {
 		config.put(ProducerConfig.ACKS_CONFIG, "all");
 		config.put(ProducerConfig.RETRIES_CONFIG, 3);
 		config.put(JacksonJsonSerializer.ADD_TYPE_INFO_HEADERS, false);
+		applySaslConfig(config);
 		return new DefaultKafkaProducerFactory<>(config);
 	}
 
@@ -93,6 +116,7 @@ public class KafkaConfig {
 		config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
 		config.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, "com.satej.fraud.domain.event,com.satej.fraud.domain.fraud.model,com.satej.fraud.domain.model");
 		config.put(JacksonJsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+		applySaslConfig(config);
 		return new DefaultKafkaConsumerFactory<>(config);
 	}
 
@@ -104,3 +128,4 @@ public class KafkaConfig {
 		return errorHandler;
 	}
 }
+
